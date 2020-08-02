@@ -44,7 +44,7 @@ import           GHCJS.DOM.Types                    (JSString, MonadJSM)
 data CanvasF a
   = Transform Float Float Float Float Float Float a
   | Fill CanvasWindingRule a
-  | FillStyle CanvasStyle a
+  | FillStyle JSString a
   | FillRect Float Float Float Float a
   | BeginPath a
   | MoveTo Double Double a
