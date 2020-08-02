@@ -44,6 +44,7 @@ import           GHCJS.DOM.Types                    (JSString, MonadJSM)
 data CanvasF a
   = Transform Float Float Float Float Float Float a
   | Fill CanvasWindingRule a
+  | FillStyle CanvasStyle a
   | FillRect Float Float Float Float a
   | BeginPath a
   | MoveTo Double Double a
@@ -83,6 +84,7 @@ applyInstruction cxt instruction =
     Clip rule cont             -> cont <$ C.clip cxt (Just rule)
     ClosePath cont             -> cont <$ C.closePath cxt
     Fill rule cont             -> cont <$ C.fill cxt ( Just rule )
+    FillStyle style cont       -> cont <$ C.setFillStyle cxt style
     FillRect x y w h cont      -> cont <$ C.fillRect cxt x y w h
     LineTo x y cont            -> cont <$ C.lineTo cxt x y
     MoveTo x y cont            -> cont <$ C.moveTo cxt x y
@@ -106,7 +108,6 @@ applyInstruction cxt instruction =
   --  Translate Double Double a
   --  Rotate Double a
   --  FillRule JSString a
-  --  FillStyle CanvasStyle a
   --  GlobalAlpha Double a
   --  LineJoin C.LineJoin a
   --  LineCap C.LineCap a
@@ -141,7 +142,6 @@ applyInstruction cxt instruction =
     --  Translate x y cont                                    -> cont <$ C.translate x y
     --  DrawImage img dw dh cont                              -> cont <$ C.drawImage cxt img dw dh
     --  FillRule rule cont                                    -> cont <$ C.setFillRule cxt rule
-    --  FillStyle style cont                                  -> cont <$ C.setFillStyle cxt style
 
 
 fillF :: CanvasWindingRule -> CanvasM ()
@@ -152,6 +152,9 @@ strokeF = liftF $ Stroke ()
 
 strokeStyleF :: JSString -> CanvasM ()
 strokeStyleF style = liftF $ StrokeStyle style ()
+
+fillStyleF :: JSString -> CanvasM ()
+fillStyleF style = liftF $ FillStyle style ()
 
 beginPathF :: CanvasM ()
 beginPathF = liftF $ BeginPath ()
