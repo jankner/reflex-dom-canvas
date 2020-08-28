@@ -53,6 +53,10 @@ data CanvasF a
   | StrokeStyle JSString a
   | Stroke a
   | Clip CanvasWindingRule a
+  | TextAlign JSString a
+  | TextBaseline JSString a
+  | FillText JSString Float Float a
+  | StrokeText JSString Float Float a
 
   | QuadraticCurveTo Double Double Double Double a
   | BezierCurveTo Double Double Double Double Double Double a
@@ -93,6 +97,10 @@ applyInstruction cxt instruction =
     StrokeRect x y w h cont    -> cont <$ C.strokeRect cxt x y w h
     StrokeStyle style cont     -> cont <$ C.setStrokeStyle cxt style
     Transform a b c d e f cont -> cont <$ C.transform cxt a b c d e f
+    TextAlign align cont       -> cont <$ C.setTextAlign cxt align
+    TextBaseline baseline cont -> cont <$ C.setTextBaseline cxt baseline
+    FillText text x y cont     -> cont <$ C.fillText   cxt text x y Nothing
+    StrokeText text x y cont   -> cont <$ C.strokeText cxt text x y Nothing
 
     Arc x y radius startAngle endAngle anticlockwise cont -> cont <$ C.arc cxt x y radius startAngle endAngle anticlockwise
     ArcTo cp1_X cp1_Y cp2_X cp2_Y radius cont             -> cont <$ C.arcTo cxt cp1_X cp1_Y cp2_X cp2_Y radius
@@ -114,13 +122,9 @@ applyInstruction cxt instruction =
   --  MiterLimit Double a
   --  SetLineDash JSArray a
   --  LineDashOffset Double a
-  --  TextAlign C.TextAlign a
-  --  TextBaseline C.TextBaseline a
   --  LineWidth Double a
   --  Font JSString a
   --  MeasureText JSString (Double -> a)
-  --  FillText JSString Double Double a
-  --  StrokeText JSString Double Double a
   --  DrawImage CanvasImageSource Float Float a
 
     --  FillText text x y cont                                -> cont <$ C.fillText text x y
@@ -176,6 +180,23 @@ moveToF x y = liftF $ MoveTo x y ()
 
 lineToF :: Double -> Double -> CanvasM ()
 lineToF x y = liftF $ LineTo x y ()
+
+  --- TextAlign JSString a
+  --- TextBaseline JSString a
+  --- FillText JSString Float Float a
+  --- StrokeText JSString Float Float a
+
+setTextAlignF :: JSString -> CanvasM ()
+setTextAlignF align = liftF $ TextAlign align ()
+
+setTextBaselineF :: JSString -> CanvasM ()
+setTextBaselineF align = liftF $ TextAlign align ()
+
+fillTextF :: JSString -> Float -> Float -> CanvasM ()
+fillTextF text x y = liftF $ FillText text x y ()
+
+strokeTextF :: JSString -> Float -> Float -> CanvasM ()
+strokeTextF text x y = liftF $ StrokeText text x y ()
 
 clearRectF, fillRectF, strokeRectF :: Float -> Float -> Float -> Float -> CanvasM ()
 clearRectF x y w h  = liftF $ ClearRect x y w h ()
